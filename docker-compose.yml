@@ -1,0 +1,78 @@
+version: '3'
+services:
+  elasticsearchplus:
+    container_name: es03
+    image: elasticsearch:8.8.1
+    volumes:
+      - /app/volumes
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - network.host=0.0.0.0
+      - transport.host=localhost
+      - node.name=es03
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=es03
+      - ES_JAVA_OPTS=-Xms1G -Xmx1G
+      - ELASTIC_PASSWORD=Kkv8Pxw7wFYgtkt7fx02
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - network.host=_eth0_
+    ulimits:
+      nproc: 262144
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  elasticsearchplus1:
+    container_name: es04
+    image: elasticsearch:8.8.1
+    volumes:
+      - /app/volumes
+    environment:
+      - network.host=0.0.0.0
+      - transport.host=localhost
+      - node.name=es04
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=es03
+      - ES_JAVA_OPTS=-Xms1G -Xmx1G
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - network.host=_eth0_
+    ulimits:
+      nproc: 262144
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9201:9200
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  web-app-new:
+    image: bendageek6789/filmsearch:latest
+    ports:
+      - 5000:5000
